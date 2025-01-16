@@ -1,5 +1,5 @@
 {% set name = "pycares" %}
-{% set version = "4.0.0" %}
+{% set version = "4.5.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: d0154fc5753b088758fbec9bc137e1b24bb84fc0c6a09725c8bac25a342311cd
+  sha256: 025b6c2ffea4e9fb8f9a097381c2fecb24aff23fbd6906e70da22ec9ba60e19d
 
 build:
   number: 0
-  skip: True  # [py<=35]
-  script: "{{ PYTHON }} -m pip install . -vv"
+  skip: True  # [py<39]
+  script_env:
+    - PYCARES_USE_SYSTEM_LIB=1
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
 
 requirements:
   build:
@@ -21,16 +23,28 @@ requirements:
     - python
     - pip
     - cffi >=1.5.0
+    - setuptools
+    - wheel
+    - c-ares 1.17
   run:
     - python
     - cffi >=1.5.0
     - idna >=2.1
+    - c-ares # bounds through run_exports
 
 test:
+  source_files:
+    - tests
   imports:
     - pycares
   commands:
     - python -m pycares google.com
+    - pip check
+    # getting pycares.errno.ARES_ETIMEOUT instead of pycares.errno.ARES_ECONNREFUSED on some tests.
+    - pytest -v -k "not (test_channel_local_ip or test_channel_local_ip2 or test_custom_resolvconf or test_query_a_rotate)"
+  requires:
+    - pip
+    - pytest
 
 about:
   home: https://pypi.org/project/pycares/
@@ -42,7 +56,7 @@ about:
     pycares is a Python module which provides an interface to c-ares. c-ares
     is a C library that performs DNS requests and name resolutions
     asynchronously.
-  doc_url: http://readthedocs.org/docs/pycares/
+  doc_url: https://pycares.readthedocs.io/
   dev_url: https://github.com/saghul/pycares
 
 extra:
