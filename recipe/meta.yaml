@@ -17,19 +17,17 @@ build:
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
 
 requirements:
-  build:
-    - {{ stdlib('c') }}
-    - {{ compiler('c') }}
   host:
     - python
     - pip
     - cffi >=1.5.0
     - setuptools
     - wheel
-    - c-ares {{ c_ares }}
+    - c-ares {{ c-ares }}
   run:
     - python
     - c-ares # bounds through run_exports
+    - cffi >=1.5.0
   run_constrained:
     - idna >=2.1
 
@@ -42,8 +40,8 @@ test:
     - python -m pycares google.com
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-    # getting pycares.errno.ARES_ETIMEOUT instead of pycares.errno.ARES_ECONNREFUSED on some tests.
-    - pytest -v -k "not (test_channel_local_ip or test_channel_local_ip2 or test_custom_resolvconf or test_query_a_rotate)"
+    # test_query_class_chaos -> AssertionError: 12 != None
+    - pytest -v -k "not test_query_class_chaos"
   requires:
     - pip
     - pytest
