@@ -31,7 +31,6 @@ requirements:
     - python
     - c-ares # bounds through run_exports
     - cffi >=1.5.0
-  run_constrained:
     - idna >=2.1
 
 test:
