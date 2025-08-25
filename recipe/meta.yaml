@@ -17,6 +17,9 @@ build:
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
 
 requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
   host:
     - python
     - pip
