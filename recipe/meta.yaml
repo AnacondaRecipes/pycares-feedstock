@@ -23,7 +23,7 @@ requirements:
     - cffi >=1.5.0
     - setuptools
     - wheel
-    - c-ares {{ c-ares }}
+    - c-ares {{ c_ares }}
   run:
     - python
     - c-ares # bounds through run_exports
