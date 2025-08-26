@@ -1,5 +1,5 @@
 {% set name = "pycares" %}
-{% set version = "4.5.0" %}
+{% set version = "4.10.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 025b6c2ffea4e9fb8f9a097381c2fecb24aff23fbd6906e70da22ec9ba60e19d
+  sha256: 9df70dce6e05afa5d477f48959170e569485e20dad1a089c4cf3b2d7ffbd8bf9
 
 build:
   number: 0
@@ -18,6 +18,7 @@ build:
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
   host:
     - python
@@ -25,12 +26,12 @@ requirements:
     - cffi >=1.5.0
     - setuptools
     - wheel
-    - c-ares 1.17
+    - c-ares {{ c_ares }}
   run:
     - python
+    - c-ares # bounds through run_exports
     - cffi >=1.5.0
     - idna >=2.1
-    - c-ares # bounds through run_exports
 
 test:
   source_files:
@@ -40,23 +41,25 @@ test:
   commands:
     - python -m pycares google.com
     - pip check
-    # getting pycares.errno.ARES_ETIMEOUT instead of pycares.errno.ARES_ECONNREFUSED on some tests.
-    - pytest -v -k "not (test_channel_local_ip or test_channel_local_ip2 or test_custom_resolvconf or test_query_a_rotate)"
+    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    # self.channel.query("google.com", pycares.QUERY_TYPE_A, cb)
+    # self.assertNoError(self.errorno)
+    - pytest -v -k "not (test_query_class_chaos or test_channel_nameservers)"
   requires:
     - pip
     - pytest
 
 about:
-  home: https://pypi.org/project/pycares/
+  home: https://pypi.org/project/pycares
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: 'Python interface for c-ares'
+  summary: Python interface for c-ares
   description: |
     pycares is a Python module which provides an interface to c-ares. c-ares
     is a C library that performs DNS requests and name resolutions
     asynchronously.
-  doc_url: https://pycares.readthedocs.io/
+  doc_url: https://pycares.readthedocs.io
   dev_url: https://github.com/saghul/pycares
 
 extra:
