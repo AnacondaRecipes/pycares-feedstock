@@ -1,17 +1,17 @@
 {% set name = "pycares" %}
-{% set version = "4.10.0" %}
+{% set version = "5.0.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 9df70dce6e05afa5d477f48959170e569485e20dad1a089c4cf3b2d7ffbd8bf9
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 5a3c249c830432631439815f9a818463416f2a8cbdb1e988e78757de9ae75081
 
 build:
   number: 0
-  skip: True  # [py<39]
+  skip: true  # [py<39]
   script_env:
     - PYCARES_USE_SYSTEM_LIB=1
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
@@ -29,7 +29,7 @@ requirements:
     - c-ares {{ c_ares }}
   run:
     - python
-    - c-ares # bounds through run_exports
+    - c-ares  # bounds through run_exports
     - cffi >=1.5.0
     - idna >=2.1
 
