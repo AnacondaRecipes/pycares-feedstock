@@ -1,5 +1,5 @@
 {% set name = "pycares" %}
-{% set version = "4.10.0" %}
+{% set version = "5.0.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 9df70dce6e05afa5d477f48959170e569485e20dad1a089c4cf3b2d7ffbd8bf9
+  sha256: 5a3c249c830432631439815f9a818463416f2a8cbdb1e988e78757de9ae75081
 
 build:
   number: 0
@@ -23,14 +23,17 @@ requirements:
   host:
     - python
     - pip
-    - cffi >=1.5.0
+    - cffi >=1.5.0    # [py<314]
+    - cffi >=2.0.0b1  # [py>=314]
     - setuptools
     - wheel
     - c-ares {{ c_ares }}
   run:
     - python
-    - c-ares # bounds through run_exports
-    - cffi >=1.5.0
+    - c-ares
+    - cffi >=1.5.0    # [py<314]
+    - cffi >=2.0.0b1  # [py>=314]
+  run_constrained:
     - idna >=2.1
 
 test:
@@ -38,16 +41,15 @@ test:
     - tests
   imports:
     - pycares
-  commands:
-    - python -m pycares google.com
-    - pip check
-    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-    # self.channel.query("google.com", pycares.QUERY_TYPE_A, cb)
-    # self.assertNoError(self.errorno)
-    - pytest -v -k "not (test_query_class_chaos or test_channel_nameservers)"
+    - pycares.errno
   requires:
     - pip
     - pytest
+  commands:
+    - pip check
+    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    - python -m pycares google.com
+    - pytest -v -k "not (test_query_class_chaos or test_channel_nameservers)"
 
 about:
   home: https://pypi.org/project/pycares
