@@ -1,17 +1,17 @@
 {% set name = "pycares" %}
-{% set version = "5.0.1" %}
+{% set version = "5.2.1" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 5a3c249c830432631439815f9a818463416f2a8cbdb1e988e78757de9ae75081
+  sha256: 3e89edc56a3745046676207958bf3dbf2971c5df0d64de9f7a893eba8bf255b4
 
 build:
   number: 0
-  skip: True  # [py<39]
+  skip: True  # [py<311]
   script_env:
     - PYCARES_USE_SYSTEM_LIB=1
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
